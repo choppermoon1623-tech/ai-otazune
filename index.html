@@ -512,11 +512,17 @@ window.fbq = {
   addReq(code, data){ return addDoc(collection(db, ROOT, code, "reqs"), data); },
   updateReq(code, id, patch){ return updateDoc(doc(db, ROOT, code, "reqs", id), patch); },
   deleteReq(code, id){ return deleteDoc(doc(db, ROOT, code, "reqs", id)); },
-  /* mineUid を渡すと自分の分だけを見る（生徒） */
+  /* mineUid を渡すと自分の分だけを見る（生徒）、null なら受付の分すべて（先生）
+     ★ Firestore のルールはフィルタではない。「権限のある分だけ返す」ということはせず、
+       権限の無い文書が混じりうるクエリは丸ごと拒否される。
+       だから先生側も必ず where(ownerUid == 自分) を付けること。
+       ここを外すと、教師の一覧が permission-denied で空になる。 */
   watchReqs(code, mineUid, cb, onErr){
     if(unsubReqs){ unsubReqs(); unsubReqs = null; }
     const col = collection(db, ROOT, code, "reqs");
-    const q = mineUid ? query(col, where("authorUid","==",mineUid)) : col;
+    const q = mineUid
+      ? query(col, where("authorUid","==",mineUid))
+      : query(col, where("ownerUid","==",auth.currentUser ? auth.currentUser.uid : "-"));
     unsubReqs = onSnapshot(q, snap=>{
       const list = []; snap.forEach(d=> list.push(Object.assign({ id:d.id }, d.data())));
       cb(list);
@@ -747,7 +753,10 @@ async function joinRoom(code, silent){
     fbq.watchReqs(code, fbq.uid(), list=>{
       SREQS = list.slice().sort((a,b)=> (b.createdAt||0) - (a.createdAt||0));
       renderSList();
-    }, err=>{ toast("おたずねが読めません（" + err.code + "）"); });
+    }, err=>{
+      $("sList").innerHTML = '<div class="note">おたずねが読めませんでした（'
+        + esc(err.code || err) + "）。先生に伝えてください。</div>";
+    });
 
   }catch(e){
     $("sJoinMsg").textContent = (e && e.code === "permission-denied")
@@ -977,7 +986,14 @@ function openTRoom(id){
       const f = TREQS.filter(r=> r.id === TCUR.id)[0];
       if(f) TCUR = f;
     }
-  }, err=>{ toast("おたずねが読めません（" + err.code + "）"); });
+  }, err=>{
+    // 消えるトーストだと気づけないので、一覧の場所に出しっぱなしにする
+    $("tReqList").innerHTML = '<div class="note" style="margin:16px 0">'
+      + "おたずねが読めませんでした（" + esc(err.code || err) + "）。<br>"
+      + "Firestore のルールが反映されていない可能性があります。"
+      + "<code>firebase deploy --only firestore:rules --project kyoumu-techou</code> を試してください。</div>";
+    toast("おたずねが読めません（" + err.code + "）");
+  });
 }
 
 $("tBack").onclick = ()=>{
