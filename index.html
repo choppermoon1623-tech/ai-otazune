@@ -402,8 +402,17 @@ input:focus,textarea:focus,select:focus{outline:2px solid #d9c9bd; outline-offse
     <div class="code-big" id="cCode">—</div>
     <div id="cQr" style="margin:10px auto 0; min-height:10px"></div>
     <p class="hint" id="cQrNote" style="margin-top:8px">QRを読むと、コードが入った状態で開きます。</p>
-    <div class="row" style="justify-content:center; margin-top:14px">
-      <button class="btn sm" id="cCopyUrl">リンクをコピー</button>
+    <div class="row" style="justify-content:center; margin-top:16px">
+      <button class="btn p" id="cCopyText">📋 Classroom用の案内文をコピー</button>
+      <button class="btn sm" id="cCopyUrl">リンクだけコピー</button>
+    </div>
+    <details style="margin-top:14px; text-align:left">
+      <summary class="small muted" style="cursor:pointer">貼り付ける文を見る／手で直す</summary>
+      <textarea id="cText" style="min-height:170px; margin-top:8px; font-size:13px"></textarea>
+    </details>
+    <div class="note ki" style="margin-top:14px; text-align:left">
+      リンクを知っている人は誰でも出せます。<strong>使い終わったら受付を閉じてください。</strong><br>
+      生徒の答えは<strong>出したのと同じ端末</strong>にしか出ません（学校の端末と自宅のスマホは別あつかいになります）。
     </div>
   </div>
 </div></div>
@@ -1350,10 +1359,30 @@ $("rDelete").onclick = async ()=>{
    ============================================================ */
 function appUrl(){ return location.origin + location.pathname; }
 
+/* Classroom などにそのまま貼れる案内文 */
+function joinText(code){
+  const room = TROOMS.filter(r=> r.id === code)[0] || TROOM || {};
+  const lines = [];
+  lines.push("【AIおたずね箱】" + (room.title || "おたずね受付"));
+  lines.push("");
+  lines.push("↓ここを開いて、おたずねを書いてください");
+  lines.push(appUrl() + "?r=" + code);
+  lines.push("");
+  if(room.note) lines.push("・" + room.note);
+  lines.push("・自分で調べてもわからなかったことを書きます");
+  lines.push("・先生が確かめてから答えを返します");
+  lines.push("・答えは、出したのと同じ端末で見てください");
+  lines.push("");
+  lines.push("（うまく開けないときは " + appUrl() + " を開いて、");
+  lines.push("　「生徒として使う」を選び、受付コード " + code + " を入れてください）");
+  return lines.join("\n");
+}
+
 function showCode(code){
   const url = appUrl();
   $("cUrl").textContent = url;
   $("cCode").textContent = code;
+  $("cText").value = joinText(code);
   drawQr($("cQr"), url + "?r=" + code);
   openM("mCode");
 }
@@ -1381,6 +1410,20 @@ $("cCopyUrl").onclick = async ()=>{
   const t = appUrl() + "?r=" + $("cCode").textContent;
   try{ await navigator.clipboard.writeText(t); toast("リンクをコピーしました。"); }
   catch(e){ toast("コピーできませんでした。手で写してください。"); }
+};
+
+$("cCopyText").onclick = async ()=>{
+  const ta = $("cText");
+  try{
+    await navigator.clipboard.writeText(ta.value);
+    toast("案内文をコピーしました。Classroomに貼り付けてください。");
+  }catch(e){
+    // clipboard が使えない環境では、選択状態にして手でコピーしてもらう
+    const dt = ta.closest("details");
+    if(dt) dt.open = true;
+    ta.focus(); ta.select();
+    toast("文を選びました。Ctrl+C（⌘C）でコピーしてください。");
+  }
 };
 
 /* ============================================================
