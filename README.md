@@ -66,8 +66,11 @@ APIキーは**その端末のブラウザ（localStorage）にだけ**保存さ�
 
 ## データの置き場所
 
-電子教務手帳と同じ Firebase プロジェクト（`kyoumu-techou`）を間借りし、`otazune/` の下だけを使う。
-手帳や成績のデータには一切さわらない。
+**このアプリ専用の Firebase プロジェクト `ai-otazune`（東京リージョン asia-northeast1）** を使う。
+電子教務手帳（`kyoumu-techou`）とは別プロジェクトで、成績データとは完全に切り離してある。
+
+> 分けてある理由：無料枠はプロジェクト単位なので、同居させるとおたずね箱が枠を使い切った日に
+> 教務手帳の同期まで止まる。ルールの書き間違いが成績データに及ぶ心配も無くなる。
 
 ```
 otazune/{受付コード}                 { v, ownerUid, title, note, kinds, nameMode, open, createdAt, updatedAt }
@@ -85,26 +88,34 @@ otazune/{受付コード}/reqs/{自動ID}    { v, ownerUid, authorUid, no, name,
 
 ## 公開するまでにやること
 
-### 1. Firebase で「匿名」ログインを有効にする ★必須
+### 1. Firebase でログイン方法を2つ有効にする ★必須
 
-Firebase コンソール → Authentication → Sign-in method → **匿名** を有効にする。
-これをやらないと、生徒側が「このアプリの準備がまだ終わっていません」で止まる。
+[Firebase コンソール](https://console.firebase.google.com/project/ai-otazune/authentication/providers) →
+Authentication → ログイン方法 で、次の2つを有効にする。
+
+- **Google** … 先生用。有効にするときプロジェクトのサポートメールを選ぶ欄が出る
+- **匿名** … 生徒用。これが無いと生徒側が「このアプリの準備がまだ終わっていません」で止まる
 
 ### 2. Firestore のルールを反映する ★必須
 
-ルールは `kyoumu-techou/firestore.rules` に追記済み。**ルールを変えたら毎回これが要る**
-（忘れると permission-denied）。`.firebaserc` が無いので `--project` は必須。
+ルールはこのフォルダの `firestore.rules`。**ルールを変えたら毎回これが要る**（忘れると permission-denied）。
+`.firebaserc` に `ai-otazune` を書いてあるので `--project` は不要。
 
 ```
-cd C:\Users\USER\Desktop\ClaudeCode\kyoumu-techou
-firebase deploy --only firestore:rules --project kyoumu-techou
+cd C:\Users\USER\Desktop\ClaudeCode\ai-otazune
+firebase deploy --only firestore:rules
 ```
 
-### 3. GitHub Pages に置く
+### 2-b. Authentication の承認済みドメインに GitHub Pages を足す ★必須
 
-リポジトリ名は `ai-otazune` を想定。main に push でデプロイ。
-教務手帳と同じ `choppermoon1623-tech.github.io` 配下なので、
-**Firebase Auth の承認済みドメインの追加は不要**。
+新しいプロジェクトなので、既定では `localhost` と `ai-otazune.firebaseapp.com` しか許可されていない。
+Authentication → 設定 → 承認済みドメイン に **`choppermoon1623-tech.github.io`** を追加する。
+これが無いと、公開URLからのGoogleログインが `auth/unauthorized-domain` で失敗する。
+
+### 3. GitHub Pages に置く（実施済み）
+
+リポジトリ `choppermoon1623-tech/ai-otazune`。main に push でデプロイ。
+公開先は https://choppermoon1623-tech.github.io/ai-otazune/ 。
 
 ---
 

@@ -456,10 +456,13 @@ input:focus,textarea:focus,select:focus{outline:2px solid #d9c9bd; outline-offse
 
 <script type="module">
 /* ============================================================
-   Firebase（電子教務手帳と同じプロジェクトを間借りしている）
+   Firebase（このアプリ専用プロジェクト ai-otazune・東京リージョン）
    ・先生 … Googleログイン
    ・生徒 … 匿名ログイン（Firebase コンソールで「匿名」を有効にすること）
-   データは otazune/ の下だけを使う。手帳や成績のデータには一切さわらない。
+   電子教務手帳（kyoumu-techou）とは別プロジェクト。成績データとは完全に切り離してある。
+   ルールは同じフォルダの firestore.rules。変えたら
+     firebase deploy --only firestore:rules
+   を忘れないこと（.firebaserc があるので --project は不要）。
    ============================================================ */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInAnonymously, signOut, onAuthStateChanged }
@@ -469,12 +472,12 @@ import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, deleteDoc, ad
   from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBBPnDMhRl_3-G7goy4oLzURpeXL0XDuLo",
-  authDomain: "kyoumu-techou.firebaseapp.com",
-  projectId: "kyoumu-techou",
-  storageBucket: "kyoumu-techou.firebasestorage.app",
-  messagingSenderId: "1053874897027",
-  appId: "1:1053874897027:web:c4874e6797ce5cb7731bb6"
+  apiKey: "AIzaSyDzGJOrVYFqq_qx5lLSUAyMMx_yBDeX1Hg",
+  authDomain: "ai-otazune.firebaseapp.com",
+  projectId: "ai-otazune",
+  storageBucket: "ai-otazune.firebasestorage.app",
+  messagingSenderId: "39506916906",
+  appId: "1:39506916906:web:adea0049dee2abed8cf553"
 };
 
 const app  = initializeApp(firebaseConfig);
@@ -1000,7 +1003,7 @@ function openTRoom(id){
     $("tReqList").innerHTML = '<div class="note" style="margin:16px 0">'
       + "おたずねが読めませんでした（" + esc(err.code || err) + "）。<br>"
       + "Firestore のルールが反映されていない可能性があります。"
-      + "<code>firebase deploy --only firestore:rules --project kyoumu-techou</code> を試してください。</div>";
+      + "<code>firebase deploy --only firestore:rules</code> を試してください。</div>";
     toast("おたずねが読めません（" + err.code + "）");
   });
 }

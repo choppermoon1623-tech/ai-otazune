@@ -1,0 +1,93 @@
+rules_version = '2';
+
+// ============================================================
+// AIおたずね箱 専用プロジェクト（ai-otazune / asia-northeast1）のルール
+//   2026-09-19 kyoumu-techou から分離
+//   先生 … Googleログイン。自分が作った受付と、その中のおたずねを全部さわれる。
+//   生徒 … 匿名ログイン。受付コードを知っていれば受付の情報を1件だけ読めて、
+//          自分が出したおたずねだけを読み書きできる。他人の分は読めない。
+// 受付コードそのものが合言葉なので、コードは口頭・黒板・QR・Classroomでだけ配ること。
+// ============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function otazuneRoom(roomId){
+      return get(/databases/$(database)/documents/otazune/$(roomId)).data;
+    }
+
+    match /otazune/{roomId} {
+      // get … コードを知っている生徒が「その受付があるか・開いているか」を見るため
+      allow get: if request.auth != null;
+      // list … 先生が自分の受付一覧を引くときだけ（where ownerUid == 自分）
+      allow list: if request.auth != null && resource.data.ownerUid == request.auth.uid;
+
+      allow create: if request.auth != null
+                    && request.auth.uid == request.resource.data.ownerUid
+                    && request.resource.data.keys().hasOnly(
+                         ["v","ownerUid","title","note","kinds","nameMode",
+                          "open","createdAt","updatedAt"])
+                    && request.resource.data.title is string
+                    && request.resource.data.title.size() <= 100;
+
+      allow update, delete: if request.auth != null
+                    && resource.data.ownerUid == request.auth.uid;
+    }
+
+    match /otazune/{roomId}/reqs/{reqId} {
+      // 1件読み（実際の文書の値で判定できる）
+      allow get: if request.auth != null
+                    && (resource.data.authorUid == request.auth.uid
+                        || resource.data.ownerUid == request.auth.uid);
+
+      // 一覧（list）は「クエリが安全だと証明できるか」で判定される。
+      // 実際の文書の値は見ないので、条件を1本の || にまとめると証明できない。
+      // 先生用・生徒用を別々の allow 文に分け、クエリ側の where と1対1で対応させる。
+      //   先生 … where("ownerUid","==",自分)
+      //   生徒 … where("authorUid","==",自分)
+      // どちらの where も無いクエリは、ここで拒否される（それでよい）。
+      allow list: if request.auth != null && resource.data.ownerUid  == request.auth.uid;
+      allow list: if request.auth != null && resource.data.authorUid == request.auth.uid;
+
+      // 生徒が出す。受付が開いているときだけ。status は new から始まる。
+      allow create: if request.auth != null
+                    && request.resource.data.authorUid == request.auth.uid
+                    && request.resource.data.ownerUid == otazuneRoom(roomId).ownerUid
+                    && otazuneRoom(roomId).open == true
+                    && request.resource.data.status == "new"
+                    && request.resource.data.answer == ""
+                    && request.resource.data.keys().hasOnly(
+                         ["v","ownerUid","authorUid","no","name","kind","fields",
+                          "status","answer","memo","policy",
+                          "createdAt","updatedAt","answeredAt"])
+                    && request.resource.data.fields is map
+                    && request.resource.data.name is string
+                    && request.resource.data.name.size() <= 40;
+
+      allow update: if request.auth != null
+                    && (
+                      // 先生は答えを書ける（持ち主と出した人は変えられない）
+                      (resource.data.ownerUid == request.auth.uid
+                       && request.resource.data.ownerUid == resource.data.ownerUid
+                       && request.resource.data.authorUid == resource.data.authorUid)
+                      ||
+                      // 生徒は、まだ先生が手をつけていない自分のものだけ書き直せる
+                      (resource.data.authorUid == request.auth.uid
+                       && resource.data.status == "new"
+                       && request.resource.data.status == "new"
+                       && request.resource.data.diff(resource.data).affectedKeys()
+                            .hasOnly(["kind","fields","no","name","updatedAt"]))
+                    );
+
+      allow delete: if request.auth != null
+                    && (resource.data.ownerUid == request.auth.uid
+                        || (resource.data.authorUid == request.auth.uid
+                            && resource.data.status == "new"));
+    }
+
+    // 上記以外のパスはすべて拒否（デフォルト拒否）。
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
