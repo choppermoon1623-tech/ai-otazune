@@ -717,7 +717,7 @@ function studentStart(){
     fbq.onAuth(user=>{
       if(!user){
         fbq.signInStudent().catch(e=>{
-          $("sJoinMsg").textContent = authErrMsg(e);
+          $("sJoinMsg").textContent = authErrMsg(e, "student");
         });
         return;
       }
@@ -726,13 +726,39 @@ function studentStart(){
   });
 }
 
-function authErrMsg(e){
-  const c = (e && e.code) || "";
+/* ログインで出る失敗を、そのまま直せる言葉にして返す。
+   who="teacher" のときは、先生が自分で直せるように操作場所まで書く。
+   生徒には「先生に伝えて」で止める（コンソールの話をしても仕方がない）。 */
+function authErrMsg(e, who){
+  const c   = String((e && e.code) || e || "");
+  const tea = who === "teacher";
+  const forStudent = "このアプリの準備がまだ終わっていません。先生に伝えてください。";
+
+  if(c.indexOf("configuration-not-found") >= 0)
+    return tea ? "Firebase の Authentication がまだ始まっていません。Firebase コンソールで Authentication を開いて「始める」を押し、"
+               + "「Google」と「匿名」を有効にしてください。"
+               : forStudent;
+
+  if(c.indexOf("unauthorized-domain") >= 0)
+    return tea ? "このアドレス（" + location.hostname + "）からのログインが許可されていません。"
+               + "Firebase コンソール → Authentication → 設定 → 承認済みドメイン に追加してください。"
+               : forStudent;
+
   if(c.indexOf("operation-not-allowed") >= 0 || c.indexOf("admin-restricted") >= 0)
-    return "このアプリの準備がまだ終わっていません（匿名ログインが無効です）。先生に伝えてください。";
+    return tea ? "Googleログインが有効になっていません。"
+               + "Firebase コンソール → Authentication → ログイン方法 で有効にしてください。"
+               : "このアプリの準備がまだ終わっていません（匿名ログインが無効です）。先生に伝えてください。";
+
+  if(c.indexOf("popup-blocked") >= 0)
+    return "ログインの小窓がブロックされました。アドレスバーの右はしの印から許可してください。";
+
+  if(c.indexOf("popup-closed") >= 0 || c.indexOf("cancelled-popup") >= 0)
+    return "ログインの画面が閉じられました。もう一度お試しください。";
+
   if(c.indexOf("network") >= 0)
-    return "インターネットにつながっていないようです。";
-  return "つながりませんでした（" + (c || e) + "）";
+    return "インターネットにつながっていないようです。学校のネットワークで止められていることもあります。";
+
+  return "つながりませんでした（" + c + "）";
 }
 
 $("sJoinBtn").onclick = ()=>{
@@ -773,7 +799,7 @@ async function joinRoom(code, silent){
   }catch(e){
     $("sJoinMsg").textContent = (e && e.code === "permission-denied")
       ? "いま受付を見る権限がありません。先生に伝えてください。"
-      : authErrMsg(e);
+      : authErrMsg(e, "student");
   }
 }
 
@@ -963,7 +989,7 @@ function teacherStart(){
 
 $("tSignIn").onclick = ()=>{
   $("tSignInMsg").textContent = "";
-  fbq.signInTeacher().catch(e=>{ $("tSignInMsg").textContent = authErrMsg(e); });
+  fbq.signInTeacher().catch(e=>{ $("tSignInMsg").textContent = authErrMsg(e, "teacher"); });
 };
 
 function renderTRooms(){

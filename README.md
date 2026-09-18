@@ -88,10 +88,16 @@ otazune/{受付コード}/reqs/{自動ID}    { v, ownerUid, authorUid, no, name,
 
 ## 公開するまでにやること
 
-### 1. Firebase でログイン方法を2つ有効にする ★必須
+### 1. Authentication を始めて、ログイン方法を2つ有効にする ★必須
 
-[Firebase コンソール](https://console.firebase.google.com/project/ai-otazune/authentication/providers) →
-Authentication → ログイン方法 で、次の2つを有効にする。
+[Firebase コンソール](https://console.firebase.google.com/project/ai-otazune/authentication) →
+Authentication を開き、**まず「始める」を押す**。
+
+> 新規プロジェクトでは Authentication 自体が未初期化で、この一手間が要る。
+> 飛ばすと `auth/configuration-not-found` になり、アプリには
+> 「Firebase の Authentication がまだ始まっていません」と出る。
+
+そのうえで「ログイン方法」タブで次の2つを有効にする。
 
 - **Google** … 先生用。有効にするときプロジェクトのサポートメールを選ぶ欄が出る
 - **匿名** … 生徒用。これが無いと生徒側が「このアプリの準備がまだ終わっていません」で止まる
