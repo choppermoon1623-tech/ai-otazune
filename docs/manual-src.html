@@ -1,0 +1,486 @@
+<title>AIおたずね箱 手引き</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@600;700&display=swap">
+<style>
+:root{
+  --sumi:#2b2622;
+  --sumi-2:#6b625b;
+  --sumi-3:#9a908a;
+  --washi:#faf7f2;
+  --card:#ffffff;
+  --keisen:#e3dcd2;
+  --keisen-2:#efe9e1;
+  --shu:#b5482f;
+  --shu-usu:#fbf0ec;
+  --shu-fuchi:#ecd6cd;
+  --ai:#2f6f8f;
+  --ai-usu:#eef5f9;
+  --ai-fuchi:#cfdfe9;
+  --kincha:#a8791a;
+  --kincha-usu:#fdf7e6;
+  --kincha-fuchi:#eadfbd;
+  --midori:#4a7c52;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --sumi:#ece5db;
+    --sumi-2:#b3a99d;
+    --sumi-3:#8a8076;
+    --washi:#1c1917;
+    --card:#262220;
+    --keisen:#3a342f;
+    --keisen-2:#332e2a;
+    --shu:#e08063;
+    --shu-usu:#2e211d;
+    --shu-fuchi:#4a332b;
+    --ai:#79b2ce;
+    --ai-usu:#1b2529;
+    --ai-fuchi:#2c3f49;
+    --kincha:#d7ae54;
+    --kincha-usu:#292317;
+    --kincha-fuchi:#463c25;
+    --midori:#82b189;
+  }
+}
+:root[data-theme="dark"]{
+  --sumi:#ece5db;
+  --sumi-2:#b3a99d;
+  --sumi-3:#8a8076;
+  --washi:#1c1917;
+  --card:#262220;
+  --keisen:#3a342f;
+  --keisen-2:#332e2a;
+  --shu:#e08063;
+  --shu-usu:#2e211d;
+  --shu-fuchi:#4a332b;
+  --ai:#79b2ce;
+  --ai-usu:#1b2529;
+  --ai-fuchi:#2c3f49;
+  --kincha:#d7ae54;
+  --kincha-usu:#292317;
+  --kincha-fuchi:#463c25;
+  --midori:#82b189;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--washi);
+  color:var(--sumi);
+  font-family:"Zen Kaku Gothic New",-apple-system,"Hiragino Kaku Gothic ProN","Meiryo",sans-serif;
+  font-size:15.5px;
+  line-height:1.95;
+  -webkit-font-smoothing:antialiased;
+}
+.sheet{max-width:780px; margin:0 auto; padding-inline:20px; padding-block:0 96px}
+
+h1,h2,h3{font-family:"Zen Old Mincho","Hiragino Mincho ProN",serif; font-weight:700; margin:0; text-wrap:balance}
+
+/* ---- 表紙 ---- */
+.hd{padding-block:60px 40px; border-bottom:3px double var(--keisen)}
+.eyebrow{
+  font-size:12px; letter-spacing:.24em; color:var(--shu);
+  font-weight:700; margin:0 0 16px;
+}
+.hd h1{font-size:clamp(30px,7vw,44px); letter-spacing:.09em; line-height:1.4}
+.hd h1 .m{color:var(--shu)}
+.hd .kind{
+  display:inline-block; margin-top:18px; font-family:"Zen Old Mincho",serif;
+  font-size:14px; letter-spacing:.3em; color:var(--sumi-2);
+  border:1px solid var(--keisen); border-radius:2px; padding:3px 14px 3px 18px;
+}
+.lead{font-size:16.5px; line-height:2.05; margin:26px 0 0; max-width:34em}
+.lead strong{color:var(--shu)}
+
+.addr{
+  margin-top:28px; padding:14px 18px; background:var(--card);
+  border:1px solid var(--keisen); border-radius:3px;
+}
+.addr .lb{font-size:11.5px; letter-spacing:.2em; color:var(--sumi-3); font-weight:700}
+.addr .u{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:14.5px; word-break:break-all; color:var(--ai); margin-top:3px;
+}
+
+/* ---- 節 ---- */
+section{padding-block:42px 0}
+.sec-h{display:flex; align-items:baseline; gap:14px; margin-bottom:8px}
+.sec-h .no{
+  font-family:"Zen Old Mincho",serif; font-size:13px; letter-spacing:.14em;
+  color:var(--shu); font-weight:700; white-space:nowrap;
+  border-bottom:2px solid var(--shu); padding-bottom:2px;
+}
+.sec-h h2{font-size:22px; letter-spacing:.05em}
+.sec-note{color:var(--sumi-2); font-size:14px; margin:0 0 22px}
+p{margin:0 0 16px; max-width:34em}
+p:last-child{margin-bottom:0}
+strong{font-weight:700}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.94em}
+
+/* ---- 準備の3手 ---- */
+.prep{list-style:none; margin:0; padding:0; display:grid; gap:12px}
+.prep li{
+  display:grid; grid-template-columns:auto 1fr; gap:14px; align-items:start;
+  background:var(--card); border:1px solid var(--keisen); border-radius:4px; padding:16px 18px;
+}
+.prep .k{
+  font-family:"Zen Old Mincho",serif; font-weight:700; font-size:15px;
+  color:var(--card); background:var(--shu); width:28px; height:28px;
+  display:grid; place-items:center; border-radius:50%; margin-top:5px;
+}
+.prep h3{font-size:16px; margin-bottom:2px}
+.prep p{font-size:14px; color:var(--sumi-2); margin:0; max-width:none}
+
+/* ---- 授業の流れ ---- */
+.flow{list-style:none; margin:0; padding:0; position:relative}
+.flow::before{
+  content:""; position:absolute; left:15px; top:14px; bottom:26px;
+  width:2px; background:var(--keisen);
+}
+.flow li{
+  position:relative; display:grid; grid-template-columns:32px 1fr; gap:16px;
+  padding-bottom:26px;
+}
+.flow .dot{
+  width:32px; height:32px; border-radius:50%; display:grid; place-items:center;
+  font-size:14px; font-weight:700; font-family:"Zen Old Mincho",serif;
+  background:var(--card); border:2px solid var(--keisen); color:var(--sumi-2);
+  z-index:1;
+}
+.flow li[data-who="tea"] .dot{border-color:var(--shu); color:var(--shu)}
+.flow li[data-who="stu"] .dot{border-color:var(--ai); color:var(--ai)}
+.flow .tag{
+  display:inline-block; font-size:11.5px; font-weight:700; letter-spacing:.14em;
+  padding:1px 10px; border-radius:999px; margin-bottom:5px;
+}
+.flow li[data-who="tea"] .tag{background:var(--shu-usu); color:var(--shu); border:1px solid var(--shu-fuchi)}
+.flow li[data-who="stu"] .tag{background:var(--ai-usu); color:var(--ai); border:1px solid var(--ai-fuchi)}
+.flow h3{font-size:17px; margin-bottom:4px}
+.flow p{font-size:14.5px; color:var(--sumi-2); margin:0; max-width:32em}
+.flow .code-eg{
+  display:inline-block; font-family:ui-monospace,monospace; font-weight:700;
+  letter-spacing:.14em; color:var(--shu); background:var(--shu-usu);
+  border:1px solid var(--shu-fuchi); border-radius:3px; padding:0 8px;
+}
+
+/* ---- 表 ---- */
+.tbl-wrap{overflow-x:auto; margin:0 0 6px}
+table{border-collapse:collapse; width:100%; min-width:460px; font-size:14px}
+caption{
+  text-align:left; font-size:12px; letter-spacing:.16em; color:var(--sumi-3);
+  font-weight:700; padding-bottom:7px;
+}
+th,td{text-align:left; padding:10px 12px; border-bottom:1px solid var(--keisen); vertical-align:top}
+thead th{
+  font-size:12px; letter-spacing:.1em; color:var(--sumi-2);
+  border-bottom:2px solid var(--keisen); white-space:nowrap;
+}
+tbody th{font-weight:700; white-space:nowrap; color:var(--sumi)}
+tbody tr:last-child th, tbody tr:last-child td{border-bottom:none}
+td .sub{color:var(--sumi-3); font-size:13px}
+
+/* ---- 注意の枠 ---- */
+.kokoro{
+  background:var(--shu-usu); border:1px solid var(--shu-fuchi);
+  border-left:4px solid var(--shu); border-radius:3px;
+  padding:20px 22px; margin-top:4px;
+}
+.kokoro h3{font-size:17px; color:var(--shu); margin-bottom:10px}
+.kokoro ul{margin:0; padding-left:1.15em}
+.kokoro li{margin-bottom:9px; line-height:1.9}
+.kokoro li:last-child{margin-bottom:0}
+.kokoro li strong{color:var(--shu)}
+
+.note{
+  background:var(--kincha-usu); border:1px solid var(--kincha-fuchi);
+  border-radius:3px; padding:14px 18px; font-size:14px; line-height:1.85;
+  color:var(--sumi);
+}
+.note b{color:var(--kincha)}
+
+/* ---- 足 ---- */
+footer{
+  margin-top:56px; padding-top:22px; border-top:3px double var(--keisen);
+  font-size:13px; color:var(--sumi-3); line-height:1.9;
+}
+footer b{color:var(--sumi-2)}
+
+a{color:var(--ai)}
+a:focus-visible, button:focus-visible{outline:2px solid var(--shu); outline-offset:2px}
+
+@media (max-width:520px){
+  body{font-size:15px}
+  .sheet{padding-inline:16px}
+  .hd{padding-block:40px 30px}
+  .sec-h{flex-direction:column; gap:4px}
+}
+@media print{
+  body{background:#fff; color:#000; font-size:10.5pt; line-height:1.75}
+  .sheet{max-width:none; padding:0}
+  section{break-inside:auto; padding-block:22px 0}
+  .prep li, .flow li, .kokoro, .note, table{break-inside:avoid}
+  .addr{background:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important; transition:none !important}
+}
+</style>
+
+<div class="sheet">
+
+<header class="hd">
+  <p class="eyebrow">登別中学校　技術科・教務</p>
+  <h1>AIお<span class="m">たずね</span>箱</h1>
+  <div class="kind">先生用 手引き</div>
+  <p class="lead">
+    生徒が書いた「おたずね」を、<strong>先生が代わりにAIへ聞いて、中身を確かめてから返す</strong>ための仕組みです。
+    生徒の端末にAIは入りません。AIに触れるのは先生の画面だけです。
+  </p>
+  <div class="addr">
+    <div class="lb">ひらく場所</div>
+    <div class="u"><a href="https://choppermoon1623-tech.github.io/ai-otazune/">https://choppermoon1623-tech.github.io/ai-otazune/</a></div>
+  </div>
+</header>
+
+<section>
+  <div class="sec-h"><span class="no">一</span><h2>なぜこの形なのか</h2></div>
+  <p>
+    生徒がAIを直接使えない以上、「使わせない」か「先生が間に入る」かの二択になります。
+    このアプリは後者です。生徒の問いは必ず先生の画面を通り、先生が読んで直してから返ります。
+  </p>
+  <p>
+    もうひとつの狙いが、<strong>問いの立て方そのものを練習させること</strong>です。
+    生徒は「知りたいこと」だけでなく、<span class="mono">なぜ知りたいのか</span>・<span class="mono">自分で調べたこと</span>・<span class="mono">どこで行きづまったか</span>を
+    書かないと出せません。ここを書かせることが、丸投げとの分かれ目になります。
+  </p>
+</section>
+
+<section>
+  <div class="sec-h"><span class="no">二</span><h2>はじめる前に</h2></div>
+  <p class="sec-note">先生の準備はこれだけです。インストールも申請も要りません。</p>
+  <ol class="prep">
+    <li>
+      <div class="k">1</div>
+      <div>
+        <h3>上のアドレスを開く</h3>
+        <p>スマホでもパソコンでも構いません。「先生として使う」を選びます。</p>
+      </div>
+    </li>
+    <li>
+      <div class="k">2</div>
+      <div>
+        <h3>Googleでログインする</h3>
+        <p>ふだんお使いのアカウントで結構です。先生ごとに別の場所ができます。他の先生の受付や生徒のおたずねは、互いに見えません。</p>
+      </div>
+    </li>
+    <li>
+      <div class="k">3</div>
+      <div>
+        <h3>「＋ 受付をつくる」</h3>
+        <p>「3年2組 社会 調べ学習」のように、授業ごとに1つ作ります。6文字の受付コードが出たら準備完了です。</p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section>
+  <div class="sec-h"><span class="no">三</span><h2>授業での流れ</h2></div>
+  <p class="sec-note">朱色が先生、藍色が生徒の番です。</p>
+  <ol class="flow">
+    <li data-who="tea">
+      <div class="dot">1</div>
+      <div>
+        <span class="tag">先生</span>
+        <h3>コードを配る</h3>
+        <p>
+          「📺 コードを大きく出す」を押すと、アドレスと <span class="code-eg">K7M2QP</span> のようなコードとQRが大きく出ます。
+          黒板に映すか、「📋 Classroom用の案内文をコピー」でそのまま貼り付けてください。
+        </p>
+      </div>
+    </li>
+    <li data-who="stu">
+      <div class="dot">2</div>
+      <div>
+        <span class="tag">生徒</span>
+        <h3>おたずねを書いて出す</h3>
+        <p>相談の型を選び、らんを埋めて「先生に出す」。出した瞬間、先生の画面に並びます。</p>
+      </div>
+    </li>
+    <li data-who="tea">
+      <div class="dot">3</div>
+      <div>
+        <span class="tag">先生</span>
+        <h3>1件開いて、AIに聞く</h3>
+        <p>
+          生徒の書いた内容から、AIに渡す文が自動で組み上がっています。
+          「📋 AIに渡す文をコピー」を押し、ふだんお使いのClaudeやChatGPTに貼り付けてください。
+        </p>
+      </div>
+    </li>
+    <li data-who="tea">
+      <div class="dot">4</div>
+      <div>
+        <span class="tag">先生</span>
+        <h3>読んで、直して、返す</h3>
+        <p>
+          AIの答えを「生徒に返す文」のらんに貼り、目を通して直します。ひとこと添えることもできます。
+          「✓ 生徒に返す」で完了です。
+        </p>
+      </div>
+    </li>
+    <li data-who="stu">
+      <div class="dot">5</div>
+      <div>
+        <span class="tag">生徒</span>
+        <h3>答えを受け取る</h3>
+        <p>生徒の画面に自動で現れます。画面を閉じていても、開き直せば残っています。</p>
+      </div>
+    </li>
+    <li data-who="tea">
+      <div class="dot">6</div>
+      <div>
+        <span class="tag">先生</span>
+        <h3>終わったら受付を閉じる</h3>
+        <p>「■ 受付を閉じる」を押すと、新しいおたずねは出せなくなります。次の時間にまた開けます。</p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section>
+  <div class="sec-h"><span class="no">四</span><h2>生徒が選ぶ4つの型</h2></div>
+  <p class="sec-note">受付をつくるとき、使わせる型を絞れます。</p>
+  <div class="tbl-wrap">
+    <table>
+      <caption>型と、生徒に書かせること</caption>
+      <thead>
+        <tr><th>型</th><th>書かせること</th><th>既定の答え方</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>🔎 調べて<br>教えてほしい</th>
+          <td>知りたいこと／なぜ／自分で調べたこと／行きづまり</td>
+          <td>事実と確かめ方</td>
+        </tr>
+        <tr>
+          <th>✏️ 書いた文を<br>見てほしい</th>
+          <td>何のための文／読む人／自分が書いた文／直したいところ</td>
+          <td>ヒント中心</td>
+        </tr>
+        <tr>
+          <th>💡 考えの<br>手がかりがほしい</th>
+          <td>テーマ／条件／自分が考えた案／行きづまり</td>
+          <td>しっかり説明</td>
+        </tr>
+        <tr>
+          <th>💬 自由に書く</th>
+          <td>先生にたのみたいこと<span class="sub"><br>（上のどれにも当てはまらないとき）</span></td>
+          <td>しっかり説明</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="sec-h"><span class="no">五</span><h2>答え方の方針</h2></div>
+  <p class="sec-note">1件ごとに切り替えられます。ここでAIの性格が変わります。</p>
+  <div class="tbl-wrap">
+    <table>
+      <caption>3つの方針</caption>
+      <thead>
+        <tr><th>方針</th><th>AIに何をさせるか</th><th>向く場面</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>事実と<br>確かめ方</th>
+          <td>確かなことと、はっきりしないことを分けて書かせる。どこで確かめられるかも出させる</td>
+          <td>調べ学習</td>
+        </tr>
+        <tr>
+          <th>ヒント<br>中心</th>
+          <td>答えそのものは書かせない。考える道すじと着目点だけ。<strong>生徒の文を書き直させない</strong></td>
+          <td>作文・レポート</td>
+        </tr>
+        <tr>
+          <th>しっかり<br>説明</th>
+          <td>内容をきちんと説明させる。ただし提出物として出せる完成品は書かせない</td>
+          <td>用語・仕組みの理解</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin-top:14px">
+    どの方針でも共通で、<span class="mono">中学生に分かる言葉で</span>・<span class="mono">確かでないことは正直に</span>・<span class="mono">そのまま提出できる完成品は書かない</span>とAIに指示してあります。
+    渡す文は「AIに渡す文を見る／手で直す」から全文を確認でき、その場で書き換えることもできます。
+  </p>
+</section>
+
+<section>
+  <div class="sec-h"><span class="no">六</span><h2>かならず守ること</h2></div>
+  <div class="kokoro">
+    <h3>この3つだけは、お願いします</h3>
+    <ul>
+      <li>
+        <strong>AIの答えを、読まずに返さないでください。</strong>
+        AIは事実を間違えます。中学生に渡る前の最後の関門は先生です。
+      </li>
+      <li>
+        <strong>受付コードは、口頭・黒板・QR・Classroomでだけ配ってください。</strong>
+        コードが唯一の合言葉です。使い終わったら受付を閉じてください。
+      </li>
+      <li>
+        <strong>「テストの答えを教えて」は見送りにしてください。</strong>
+        理由を書いて「見送り」にすると、その言葉がそのまま生徒に届きます。断ることも指導のうちです。
+      </li>
+    </ul>
+  </div>
+  <p style="margin-top:20px">
+    なお、受付をつくるとき<strong>「出席番号だけ書かせる」</strong>を選べます。
+    こうすると氏名はどこにも保存されず、番号だけが残ります。名簿と突き合わせれば誰か分かりますので、
+    ふだんはこちらで足りるはずです。
+  </p>
+</section>
+
+<section>
+  <div class="sec-h"><span class="no">七</span><h2>困ったとき</h2></div>
+  <div class="tbl-wrap">
+    <table>
+      <caption>症状と、たいていの原因</caption>
+      <thead>
+        <tr><th>こうなったら</th><th>たいていはこれです</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>生徒が<br>「入れません」</th>
+          <td>コードの打ち間違いです。<strong>紛らわしい I・O・0・1 は使っていません</strong>ので、似た字に見えたら別の字です。QRかリンクで配るのが確実です</td>
+        </tr>
+        <tr>
+          <th>生徒が<br>「出せません」</th>
+          <td>受付が閉じています。先生の画面で「▶ 受付を開く」を押してください</td>
+        </tr>
+        <tr>
+          <th>答えが<br>見当たらない</th>
+          <td><strong>出したのと同じ端末</strong>でしか見えません。学校の端末で出したものは、自宅のスマホには出ません</td>
+        </tr>
+        <tr>
+          <th>画面が<br>古いまま</th>
+          <td>Ctrl と Shift を押しながら R（スマホは再読み込み）。新しくした直後はこれが要ることがあります</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note" style="margin-top:20px">
+    <b>「⚙ 設定」のAPIキーの欄について</b> ── 空のままで結構です。
+    ここはAIを自動で呼ぶための上級者向けの欄で、空のときが通常の使い方（コピー方式）です。
+    何も入れなければ費用もかかりません。
+  </div>
+</section>
+
+<footer>
+  <b>AIおたずね箱</b>　登別中学校 三浦 作<br>
+  不具合・こうしたいという要望は、直接お知らせください。直せるものはその日のうちに直します。<br>
+  生徒の書いた内容は、受付を消すまで残ります。使い終わった受付は、設定から削除してください。
+</footer>
+
+</div>
