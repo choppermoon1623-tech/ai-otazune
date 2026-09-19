@@ -615,6 +615,22 @@ const KINDS = {
     policy:"teach",
     fields:[
       { k:"q", lb:"先生にたのみたいこと", ph:"できるだけくわしく書いてください。", t:"area", req:1, big:1 }
+    ]},
+  /* 技術科「計測・制御による問題解決」。
+     この型は、別アプリ「計測・制御 逆引きシステム」から届く。
+     おたずね箱のこの画面からは出せないので KIND_ORDER には入れない。
+     ここに書いてあるのは、届いたものを正しく読むためのラベル。
+     これが無いと KINDS.free に落ちて、生徒が書いた中身が1つも表示されない。 */
+  keisoku:{ ic:"🔌", nm:"計測・制御の相談", ds:"計測・制御 逆引きシステムから届いた相談",
+    policy:"hint", fromApp:"計測・制御 逆引きシステム",
+    fields:[
+      { k:"theme",  lb:"テーマ・課題",                 t:"text", req:1 },
+      { k:"joken",  lb:"条件・きまり",                 t:"area" },
+      { k:"mine",   lb:"自分が考えた案・ためしたこと", t:"area", req:1 },
+      { k:"stuck",  lb:"どこで行きづまったか",         t:"area" },
+      { k:"komari", lb:"いま、いちばん困っていること", t:"text" },
+      { k:"sens",   lb:"逆引きが出した候補（計測）",   t:"text" },
+      { k:"acts",   lb:"逆引きが出した候補（制御）",   t:"text" }
     ]}
 };
 const KIND_ORDER = ["shirabe","sakubun","idea","free"];
@@ -660,6 +676,19 @@ function buildPrompt(req, policyKey){
     if(v) lines.push("【" + f.lb + "】\n" + v);
   });
   lines.push("―― ここまで ――");
+  /* 計測・制御は、学校にある装置の一覧が無いと、AIが「買わないと手に入らない部品」を
+     平気ですすめてくる。一覧を同梱できるのは逆引きシステムの⑥なので、
+     ここで答えるときは、せめて歯止めだけかけておく。 */
+  if(req.kind === "keisoku"){
+    lines.push("");
+    lines.push("【計測・制御のときに必ず守ること】");
+    lines.push("・中学校にある装置（micro:bit とジョイント基板につなぐもの）の範囲で考える。");
+    lines.push("　新しく買う必要のある部品はすすめない。");
+    lines.push("・つなぎ方、コネクタ番号（P0・P1など）、しきい値の具体的な数値は書かない。");
+    lines.push("　それらは北海道教育大学札幌校 石川研究室の配布資料で生徒が確かめる決まり。");
+    lines.push("　かわりに「どの資料を見ればよいか」と「何と何を比べて決めるか」を示す。");
+    lines.push("・生徒がすでに考えた案を、どう伸ばせるかから書く。別の案に置きかえない。");
+  }
   return lines.join("\n");
 }
 
@@ -837,6 +866,16 @@ function roomKinds(room){
 
 function renderSKinds(){
   const ks = roomKinds(SROOM);
+  /* 別アプリ専用の受付（計測・制御 逆引きシステムなど）。
+     この画面から出せる型が1つも無いので、だまって空欄にせず理由を出す */
+  if(!ks.length){
+    SKIND = "";
+    $("sKinds").innerHTML = '<div class="empty">この受付は、ほかのアプリから出すための受付です。'
+      + '計測・制御の相談は「計測・制御 逆引きシステム」の\u2464の画面から、'
+      + 'この受付コードをそのまま使って送ってください。</div>';
+    $("sFields").innerHTML = ""; $("sSubmitRow").classList.add("hide");
+    return;
+  }
   if(ks.length === 1 && !SKIND) SKIND = ks[0];
   $("sKinds").innerHTML = ks.map(k=>{
     const d = KINDS[k];

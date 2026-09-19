@@ -132,11 +132,34 @@ Firebase の実装を変えたら、偽物側も合わせること。
 
 ---
 
+## 5-b. 計測・制御 逆引きシステムとの相乗り（2026-09-19）
+
+`C:\Users\USER\Desktop\ClaudeCode\keisoku-gyakubiki` が、**同じプロジェクト・同じ
+`otazune` コレクション**に書くようになった。`kind:"keisoku"` で届く。
+
+**なぜ別コレクションにしなかったか。** 先生のログインと受付を2つに分けたくなかった。
+受付コードは黒板に書いて口頭で伝えるものなので、教科ごとに増えると必ず取りちがえる。
+ルールを新しく書き足すほうが、おたずね箱の側を壊す危険が大きいとも判断した
+（ルールまわりは、このアプリで唯一実害の出たところ）。
+
+**ルールは1行も変えていない。** おたずね箱のルールは `kind` の値も `fields` の中身も見ず、
+キーの集合（`hasOnly`）と `status` / `answer` / 持ち主だけを見るので、そのまま通った。
+**逆に言うと、逆引き側で送る文書のキーを1つでも増やすと create が拒否される。**
+増やしたくなったら、ルールの `hasOnly` と両アプリの3か所を同時に直すこと。
+
+**`KINDS.keisoku` を消してはいけない。** `KINDS[r.kind] || KINDS.free` で落ちるので、
+消すと先生の画面から生徒の書いた中身が消える（エラーにならないので気づきにくい）。
+`KIND_ORDER` に入れないのは意図的で、この画面のフォームからは出させない。
+
+**答えるのは逆引きの⑥。** 学校にある51種の装置の一覧を同梱できるのはあちらだけ。
+ここで答えるときのために `buildPrompt` に歯止めを入れてあるが、一覧そのものは渡せない。
+
 ## 6. 関連するもの
 
 - 先生向け手引き（Artifact）: https://claude.ai/artifact/5xewohxh3AqvKmuCuSyGzD
 - 公開URL: https://choppermoon1623-tech.github.io/ai-otazune/
 - Firebase コンソール: https://console.firebase.google.com/project/ai-otazune/overview
+- 計測・制御 逆引きシステム（`keisoku-gyakubiki`）… **同じプロジェクトに相乗り**。5-b を読むこと。
 - 電子教務手帳（`kyoumu-techou`）… **別プロジェクト**。分離前の残骸として、
   `kyoumu-techou/firestore.rules` に otazune のルールとテストデータが残っている可能性がある。
   新プロジェクトの動作確認後に消す予定（2026-09-19 時点で未実施）
