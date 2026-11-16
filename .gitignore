@@ -1,2 +1,7 @@
 scratchpad/
 node_modules/
+
+# 生成したメディアと案件ごとのプロンプトは公開しない（手元だけに置く）
+assets/generated/*
+!assets/generated/.gitkeep
+media-prompts/2*.md
